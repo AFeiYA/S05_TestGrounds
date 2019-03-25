@@ -59,9 +59,9 @@ public:
 	/** Whether to use motion controller location for aiming. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	uint32 bUsingMotionControllers : 1;
-
-
+	
 	/** Fires a projectile. */
+	UFUNCTION(BlueprintCallable, Category = "Input")
 	void OnFire();
 
 };
