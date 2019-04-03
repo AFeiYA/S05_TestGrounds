@@ -70,7 +70,7 @@ void AFirstPersonCharacter::BeginPlay()
 	}
 	Gun = GetWorld()->SpawnActor<AGun>(GunBlueprint);
 	Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
-	Gun->AnimInstance = Mesh1P->GetAnimInstance();
+	Gun->AnimInstance1P = Mesh1P->GetAnimInstance();
 	if (EnableTouchscreenMovement(InputComponent) == false) 
 	{
 		InputComponent->BindAction("Fire", IE_Pressed, Gun, &AGun::OnFire);
@@ -233,7 +233,6 @@ bool AFirstPersonCharacter::EnableTouchscreenMovement(class UInputComponent* Pla
 		//Commenting this out to be more consistent with FPS BP template.
 		//PlayerInputComponent->BindTouch(EInputEvent::IE_Repeat, this, &AFirstPersonCharacter::TouchUpdate);
 		return true;
-	}
-	
+	}	
 	return false;
 }

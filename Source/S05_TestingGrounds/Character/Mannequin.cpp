@@ -5,7 +5,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "../Weapons/Gun.h"
-
+#include "Components/InputComponent.h"
 
 // Sets default values
 AMannequin::AMannequin()
@@ -33,18 +33,30 @@ AMannequin::AMannequin()
 void AMannequin::BeginPlay()
 {
 	Super::BeginPlay();
+	UE_LOG(LogTemp, Warning, TEXT("I am in Begin Play!"));
 	if (GunBlueprint == nullptr)
 	{
 		return;
 	}
 	Gun = GetWorld()-> SpawnActor<AGun>(GunBlueprint);
+
 	if (IsPlayerControlled())
 	{
 		Gun->AttachToComponent(FirstPersonMesh, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+
 	}
-	else {
-		Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+	else 
+	{
+		Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));	
 	}
+	Gun->AnimInstance1P = FirstPersonMesh->GetAnimInstance();//设置枪击的后坐力动画。
+	Gun->AnimInstance3P = GetMesh()->GetAnimInstance();//设置枪击的后坐力动画。
+
+	//if (InputComponent!=nullptr) 
+	//{
+	//	InputComponent->BindAction("Fire", IE_Pressed, this, &AMannequin::Fire);
+	//
+	//}
 	
 }
 
@@ -57,7 +69,26 @@ void AMannequin::Tick(float DeltaTime)
 // Called to bind functionality to input
 void AMannequin::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
+	//再beginPlay之前运行。
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &AMannequin::Fire);
+	//UE_LOG(LogTemp, Warning, TEXT("I am in setup player input component!!!!"));
+}
+void AMannequin::UnPossessed()
+{
+	//再beginPlay之前运行。
+	Super::UnPossessed();
+	if (Gun != nullptr) 
+	{
+		Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
+		//UE_LOG(LogTemp, Warning, TEXT("I am in UnPossessed !!!"));
+	}
+}
 
+
+
+void AMannequin::Fire()
+{
+	Gun->OnFire();
 }
 

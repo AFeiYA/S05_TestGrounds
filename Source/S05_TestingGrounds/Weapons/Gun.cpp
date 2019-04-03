@@ -17,7 +17,8 @@ AGun::AGun()
 	FP_Gun->bCastDynamicShadow = false;
 	FP_Gun->CastShadow = false;
 	// FP_Gun->SetupAttachment(Mesh1P, TEXT("GripPoint"));
-	FP_Gun->SetupAttachment(RootComponent);
+	// FP_Gun->SetupAttachment(RootComponent);
+	SetRootComponent(FP_Gun);
 
 	FP_MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
 	FP_MuzzleLocation->SetupAttachment(FP_Gun);
@@ -71,14 +72,14 @@ void AGun::OnFire()
 		UWorld* const World = GetWorld();
 		if (World != NULL)
 		{
-			if (bUsingMotionControllers)
-			{
-				const FRotator SpawnRotation = VR_MuzzleLocation->GetComponentRotation();
-				const FVector SpawnLocation = VR_MuzzleLocation->GetComponentLocation();
-				World->SpawnActor<ABallProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
-			}
-			else
-			{
+			//if (bUsingMotionControllers)
+			//{
+			//	const FRotator SpawnRotation = VR_MuzzleLocation->GetComponentRotation();
+			//	const FVector SpawnLocation = VR_MuzzleLocation->GetComponentLocation();
+			//	World->SpawnActor<ABallProjectile>(ProjectileClass, SpawnLocation, SpawnRotation);
+			//}
+			//else
+			//{
 				const FRotator SpawnRotation = FP_MuzzleLocation->GetComponentRotation();
 				// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
 				const FVector SpawnLocation =  FP_MuzzleLocation->GetComponentLocation();
@@ -89,25 +90,28 @@ void AGun::OnFire()
 
 				// spawn the projectile at the muzzle
 				World->SpawnActor<ABallProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
-			}
+			//}
 		}
 	}
 
 	// try and play the sound if specified
-	if (FireSound != NULL)
+	if (FireSound != nullptr)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
 	}
 
 	// try and play a firing animation if specified
-	if (FireAnimation != NULL)
+	if (FireAnimation1P != nullptr && AnimInstance1P != nullptr)
 	{
 		// Get the animation object for the arms mesh
 		//UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-		if (AnimInstance != NULL)
-		{
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
-		}
+		AnimInstance1P->Montage_Play(FireAnimation1P, 1.f);
+	}
+	if (FireAnimation3P != nullptr && AnimInstance3P!= nullptr)
+	{
+		// Get the animation object for the arms mesh
+		//UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+		AnimInstance3P->Montage_Play(FireAnimation3P, 1.f);
 	}
 }
 

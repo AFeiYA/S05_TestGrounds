@@ -27,8 +27,14 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	//virtual void UnPossessed() override;
+	virtual void UnPossessed() override;
+	
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
 	class TSubclassOf<class AGun>  GunBlueprint;
+
+	UFUNCTION(BlueprintCallable, Category="Weapon")
+	void Fire();
 
 private:
 	//create a first camera component.
