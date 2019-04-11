@@ -34,8 +34,10 @@ void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, int MinSpawn, int MaxSpawn)
 void ATile::BeginPlay()
 {
 	Super::BeginPlay();
-	CastSphere(GetActorLocation(), 100);
-	CastSphere(GetActorLocation()+FVector(0,0,500), 100);
+	CastSphere(GetActorLocation(), 200);
+	CastSphere(GetActorLocation() + FVector(500, 0, 0), 200);
+	CastSphere(GetActorLocation() + FVector(1000, 500, 0), 200);
+	CastSphere(GetActorLocation()+FVector(1000,500,500), 200);
 }
 
 // Called every frame
