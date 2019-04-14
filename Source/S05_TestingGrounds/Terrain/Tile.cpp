@@ -5,6 +5,7 @@
 #include "MotionControllerComponent.h"
 #include "DrawDebugHelpers.h"
 
+
 // Sets default values
 ATile::ATile()
 {
@@ -72,8 +73,8 @@ bool ATile::IsAvailableToSpawn(FVector Location, float Radius)
 	FVector WorldLocation = ActorToWorld().TransformPosition(Location);
 	bool HasHit = GetWorld()->SweepSingleByChannel(HitResult, WorldLocation, WorldLocation,FQuat::Identity,
 		ECollisionChannel::ECC_GameTraceChannel2, FCollisionShape::MakeSphere(Radius));
-	FColor ResultColor = HasHit ? FColor::Red : FColor::Green;
-	DrawDebugCapsule(GetWorld(), WorldLocation, 20 , Radius, FQuat::Identity, ResultColor, true, 100);
+	//FColor ResultColor = HasHit ? FColor::Red : FColor::Green;
+	//DrawDebugCapsule(GetWorld(), WorldLocation, 20 , Radius, FQuat::Identity, ResultColor, true, 100);
 	return !HasHit;
 }
 
