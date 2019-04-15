@@ -5,7 +5,7 @@
 #include "MotionControllerComponent.h"
 #include "DrawDebugHelpers.h"
 #include "ActorPool.h"
-#include "AI/NavigationSystemBase.h"
+#include "NavigationSystem.h"
 
 
 // Sets default values
@@ -97,5 +97,5 @@ void ATile::SetPool(UActorPool* InPool)
 	}
 	UE_LOG(LogTemp, Warning, TEXT("%s check out : %s"), *(this->GetName()), *Actors->GetName());
 	Actors->SetActorLocation(GetActorLocation() - FVector(2000,0,0));
-	
+	UNavigationSystemV1::GetNavigationSystem(GetWorld())->Build();
 }
