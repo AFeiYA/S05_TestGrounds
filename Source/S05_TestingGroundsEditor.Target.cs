@@ -8,6 +8,7 @@ public class S05_TestingGroundsEditorTarget : TargetRules
 	public S05_TestingGroundsEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
-		ExtraModuleNames.Add("S05_TestingGrounds");
-	}
+
+        ExtraModuleNames.AddRange(new string[] { "S05_TestingGrounds" });
+    }
 }

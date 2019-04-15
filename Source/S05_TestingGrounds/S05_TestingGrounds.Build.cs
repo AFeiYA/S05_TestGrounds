@@ -7,7 +7,9 @@ public class S05_TestingGrounds : ModuleRules
 	public S05_TestingGrounds(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-
+   
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay" ,"AIModule" , "GameplayTasks"});
-	}
+
+        PrivateDependencyModuleNames.AddRange(new string[] { });
+    }
 }
