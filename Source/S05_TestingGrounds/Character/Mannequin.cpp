@@ -33,7 +33,7 @@ AMannequin::AMannequin()
 void AMannequin::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Warning, TEXT("I am in Begin Play!"));
+	//UE_LOG(LogTemp, Warning, TEXT("I am in Begin Play!"));
 	if (GunBlueprint == nullptr)
 	{
 		return;

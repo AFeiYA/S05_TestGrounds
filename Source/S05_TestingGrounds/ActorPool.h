@@ -15,5 +15,12 @@ class S05_TESTINGGROUNDS_API UActorPool : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UActorPool();
-		
+
+	AActor* CheckOut();
+	void Return(AActor* ActorToReturn);
+	void Add(AActor* ActorToAdd);
+
+private:
+	TArray<AActor*> Pool;
+
 };

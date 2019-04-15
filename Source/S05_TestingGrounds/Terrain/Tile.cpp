@@ -4,6 +4,8 @@
 #include "Tile.h"
 #include "MotionControllerComponent.h"
 #include "DrawDebugHelpers.h"
+#include "ActorPool.h"
+#include "AI/NavigationSystemBase.h"
 
 
 // Sets default values
@@ -62,11 +64,18 @@ void ATile::BeginPlay()
 	Super::BeginPlay();
 }
 
+void ATile::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s end play"), *GetName());
+	Pool->Return(Actors);
+}
+
 // Called every frame
 void ATile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+
 bool ATile::IsAvailableToSpawn(FVector Location, float Radius)
 {
 	FHitResult HitResult;
@@ -77,4 +86,16 @@ bool ATile::IsAvailableToSpawn(FVector Location, float Radius)
 	//DrawDebugCapsule(GetWorld(), WorldLocation, 20 , Radius, FQuat::Identity, ResultColor, true, 100);
 	return !HasHit;
 }
-
+void ATile::SetPool(UActorPool* InPool)
+{
+	//UE_LOG(LogTemp, Warning, TEXT("%s  Pool : %s"), *(this->GetName()), *(InPool->GetName()));
+	Pool = InPool;
+	Actors = Pool->CheckOut();
+	if (Actors == nullptr)
+	{
+		return;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("%s check out : %s"), *(this->GetName()), *Actors->GetName());
+	Actors->SetActorLocation(GetActorLocation() - FVector(2000,0,0));
+	
+}
