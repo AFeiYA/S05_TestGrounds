@@ -25,21 +25,10 @@ AActor* UActorPool::CheckOut()
 }
 void UActorPool::Return(AActor* ActorToReturn)
 {
-	if (ActorToReturn!=nullptr) 
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s Return:%s"), *GetName(),*ActorToReturn->GetName());
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s Return called"), *GetName());
-		return;
-	}
+
+	Add(ActorToReturn);
 }
 void UActorPool::Add(AActor* ActorToAdd)
 {
-	if (ActorToAdd==nullptr)
-	{
-		return;
-	}
 	Pool.Push(ActorToAdd);
 }

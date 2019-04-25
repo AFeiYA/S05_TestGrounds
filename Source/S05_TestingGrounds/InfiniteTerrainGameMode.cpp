@@ -25,6 +25,7 @@ void AInfiniteTerrainGameMode::PopulateActors()
 	  {
 		  /*AddToNavMeshVolume(*ActorIterator);*/
 		  AddToPool(*ActorIterator);
+		  //UE_LOG(LogTemp, Warning, TEXT("ActorName:%s, Type:%s "), *ActorIterator->GetName(), *ActorIterator->GetActorLabel());
 	  }	 
 	  ++ActorIterator;
 

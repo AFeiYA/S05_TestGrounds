@@ -29,7 +29,9 @@ public:
 	//virtual void UnPossessed() override;
 	virtual void UnPossessed() override;
 	
-	
+	UPROPERTY(EditDefaultsOnly, Category = "Setup")
+	class TSubclassOf<class ATile>  TileBlueprint;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
 	class TSubclassOf<class AGun>  GunBlueprint;
 

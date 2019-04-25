@@ -8,6 +8,8 @@
 #include "NavigationSystem.h"
 
 
+
+
 // Sets default values
 ATile::ATile()
 {
@@ -15,30 +17,75 @@ ATile::ATile()
 	PrimaryActorTick.bCanEverTick = true;
 
 }
-void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, float Radius, int MinSpawn, int MaxSpawn, float MinScale, float MaxScale)
+TArray<TSubclassOf<AActor>> ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, float Radius, int MinSpawn, int MaxSpawn, float MinScale, float MaxScale)
 {
+    return RandomlyPlaceActors(ToSpawn, Radius, MinSpawn, MaxSpawn, MinScale, MaxScale);
+}
 
+TArray<TSubclassOf<APawn>> ATile::PlaceAIPawns(TSubclassOf<APawn> ToSpawn, float Radius, int MinSpawn, int MaxSpawn)
+{
+	return RandomlyPlaceActors(ToSpawn, Radius,MinSpawn,MaxSpawn, 1, 1);
+}
+
+
+template<class T>
+inline TArray<TSubclassOf<T>> ATile::RandomlyPlaceActors(TSubclassOf<T> ToSpawn, float Radius, int MinSpawn, int MaxSpawn, float MinScale, float MaxScale)
+{
 	int NumberToSpawn = FMath::FRandRange(MinSpawn, MaxSpawn);
+	TArray<TSubclassOf<T>> SpawnedObjects;
 	for (size_t i = 0; i < NumberToSpawn; i++)
 	{
 		FVector SpawnPoint;
 		if (FindEmptyLocation(SpawnPoint, Radius)) {
-			PlaceActor(ToSpawn, SpawnPoint, FMath::RandRange(-180.f, 180.f), FMath::RandRange(MinScale, MaxScale));
+			FSpawnInfo SpawnInfo;
+			SpawnInfo.Location = SpawnPoint;
+			SpawnInfo.Rotation = FMath::RandRange(-180.f, 180.f);
+			SpawnInfo.Scale = FMath::RandRange(MinScale, MaxScale);
+			PlaceActor(ToSpawn, SpawnInfo);
+			if(ToSpawn != nullptr)
+			{
+				SpawnedObjects.Push(ToSpawn);
+			}
+			
+			//UE_LOG(LogTemp, Warning, TEXT("Name:%s"), *ToSpawn->GetName());
 		}
 		//UE_LOG(LogTemp, Warning, TEXT("Random point position: %s"), *SpownPoint.ToCompactString());
+	}
+	return SpawnedObjects;
+
+	
+}
+
+
+
+void ATile::PlaceActor(TSubclassOf<AActor> ToSpawn, FSpawnInfo SpawnInfo)
+{
+	AActor* Spawned = GetWorld()->SpawnActor<AActor>(ToSpawn);
+	if (Spawned) 
+	{
+		Spawned->SetActorRelativeLocation(SpawnInfo.Location);
+		Spawned->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
+		Spawned->SetActorRotation(FRotator(0, SpawnInfo.Rotation, 0));
+		Spawned->SetActorScale3D(FVector(SpawnInfo.Scale));
 	}
 
 }
 
-void ATile::PlaceActor(TSubclassOf<AActor> ToSpawn, FVector SpawnPosition, float Rotation , float Scale)
+void ATile::PlaceActor(TSubclassOf<APawn> ToSpawn, FSpawnInfo SpawnInfo)
 {
-
-	AActor* Spawned = GetWorld()->SpawnActor<AActor>(ToSpawn);
-	Spawned->SetActorRelativeLocation(SpawnPosition);
-	Spawned->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
-	Spawned->SetActorRotation(FRotator(0, Rotation, 0));
-	Spawned->SetActorScale3D(FVector(Scale));
+	APawn* Spawned = GetWorld()->SpawnActor<APawn>(ToSpawn);
+	if (Spawned) 
+	{
+		Spawned->SetActorRelativeLocation(SpawnInfo.Location);
+		Spawned->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
+		Spawned->SetActorRotation(FRotator(0, SpawnInfo.Rotation, 0));
+		Spawned->SpawnDefaultController();
+		Spawned->Tags.Add(FName("Enemy"));
+	}
 }
+
+
+
 
 bool ATile::FindEmptyLocation(FVector& OutLocation, float Radius)
 {
@@ -53,6 +100,7 @@ bool ATile::FindEmptyLocation(FVector& OutLocation, float Radius)
 			OutLocation = CandidatePoint;
 			return true;
 		}
+
 	}
 	return false;
 }
@@ -62,12 +110,16 @@ bool ATile::FindEmptyLocation(FVector& OutLocation, float Radius)
 void ATile::BeginPlay()
 {
 	Super::BeginPlay();
+
+
 }
 
 void ATile::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s end play"), *GetName());
-	Pool->Return(Actors);
+	if (Actors!= nullptr && Pool != nullptr) {
+		Pool->Return(Actors);
+		//UE_LOG(LogTemp, Warning, TEXT("End  play  Pool : %s"), *Actors->GetName());
+	}
 }
 
 // Called every frame
@@ -80,10 +132,11 @@ bool ATile::IsAvailableToSpawn(FVector Location, float Radius)
 {
 	FHitResult HitResult;
 	FVector WorldLocation = ActorToWorld().TransformPosition(Location);
-	bool HasHit = GetWorld()->SweepSingleByChannel(HitResult, WorldLocation, WorldLocation,FQuat::Identity,
+	bool HasHit = GetWorld()->SweepSingleByChannel(HitResult, WorldLocation, WorldLocation+FVector(0,0,1),FQuat::Identity,
 		ECollisionChannel::ECC_GameTraceChannel2, FCollisionShape::MakeSphere(Radius));
-	//FColor ResultColor = HasHit ? FColor::Red : FColor::Green;
-	//DrawDebugCapsule(GetWorld(), WorldLocation, 20 , Radius, FQuat::Identity, ResultColor, true, 100);
+	FColor ResultColor = HasHit ? FColor::Red : FColor::Green;
+	//DrawDebugCapsule(GetWorld(), WorldLocation, 0 , Radius, FQuat::Identity, ResultColor, true, 100);
+	//DrawDebugSphere(GetWorld(), WorldLocation, Radius, 20, ResultColor, true, 100.f);
 	return !HasHit;
 }
 void ATile::SetPool(UActorPool* InPool)
@@ -93,6 +146,7 @@ void ATile::SetPool(UActorPool* InPool)
 	Actors = Pool->CheckOut();
 	if (Actors == nullptr)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("[%s] Not enough actors in pool."), *GetName());
 		return;
 	}
 	UE_LOG(LogTemp, Warning, TEXT("%s check out : %s"), *(this->GetName()), *Actors->GetName());
