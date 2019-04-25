@@ -47,11 +47,11 @@ void AInfiniteTerrainGameMode::PopulateActors()
 void AInfiniteTerrainGameMode::AddToPool(AActor * ActorToAdd)
 {
 	Actors->Add(ActorToAdd);
-	//NavMeshBoundsVolume.Push(ActorToAdd);
-	//if (NavMeshBoundsVolume.Num() == 0) 
-	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("nav mesh num:%s "), NavMeshBoundsVolume.Num());
-	//}
+	NavMeshBoundsVolume.Push(ActorToAdd);
+	if (NavMeshBoundsVolume.Num() == 0) 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("nav mesh num:%s "), NavMeshBoundsVolume.Num());
+	}
 	if (Actors == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Actors:%s "), *Actors->GetName());

@@ -150,6 +150,6 @@ void ATile::SetPool(UActorPool* InPool)
 		return;
 	}
 	UE_LOG(LogTemp, Warning, TEXT("%s check out : %s"), *(this->GetName()), *Actors->GetName());
-	Actors->SetActorLocation(GetActorLocation() - FVector(2000,0,0));
+	Actors->SetActorLocation(GetActorLocation() + FVector(2000,0,0));
 	UNavigationSystemV1::GetNavigationSystem(GetWorld())->Build();
 }
